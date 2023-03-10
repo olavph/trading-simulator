@@ -16,7 +16,9 @@ public:
     void amend(const Order&) override;
     void pull(order_id) override;
 
-    std::vector<std::string> getTradesAndPriceLevels() override;
+    std::vector<Trade> getTrades() const override;
+    PriceLevels getPriceLevels() const override;
+    std::vector<std::string> getTradesAndPriceLevels() const override;
 
 private:
     // Map symbols to order books

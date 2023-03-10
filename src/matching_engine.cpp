@@ -82,26 +82,44 @@ void MatchingEngine::pull(order_id id)
     }
 }
 
-std::vector<std::string> MatchingEngine::getTradesAndPriceLevels()
+std::vector<Trade> MatchingEngine::getTrades() const
+{
+    return completed_trades;
+}
+
+PriceLevels MatchingEngine::getPriceLevels() const
+{
+    PriceLevels price_levels;
+    for (auto& [symbol, double_sided_book] : order_books)
+    {
+        PriceLevelsForSymbol levels_for_symbol;
+        levels_for_symbol.buys = double_sided_book.buys.getPriceLevels();
+        levels_for_symbol.sells = double_sided_book.sells.getPriceLevels();
+        price_levels.symbols.emplace(std::make_pair(symbol, levels_for_symbol));
+    }
+    return price_levels;
+}
+
+std::vector<std::string> MatchingEngine::getTradesAndPriceLevels() const
 {
     std::vector<std::string> output;
-    for (const auto& trade : completed_trades)
+    for (const auto& trade : getTrades())
     {
         std::ostringstream line_stream;
         line_stream << trade.symbol << "," << format_price(trade.price) << ","<< trade.volume
                     << "," << trade.aggressive << "," << trade.passive;
         output.push_back(line_stream.str());
     }
-    for (auto& [symbol, double_sided_book] : order_books)
+    for (auto& [symbol, levels_for_symbol] : getPriceLevels().symbols)
     {
         std::ostringstream header_stream;
         header_stream << "===" << symbol << "===";
         output.push_back(header_stream.str());
 
-        auto buys_levels = double_sided_book.buys.getPriceLevels();
+        auto buys_levels = levels_for_symbol.buys;
         auto buys_it = buys_levels.begin();
         auto buys_end = buys_levels.end();
-        auto sells_levels = double_sided_book.sells.getPriceLevels();
+        auto sells_levels = levels_for_symbol.sells;
         auto sells_it = sells_levels.begin();
         auto sells_end = sells_levels.end();
         while (buys_it != buys_end || sells_it != sells_end)

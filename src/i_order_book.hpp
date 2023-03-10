@@ -1,25 +1,10 @@
 #pragma once
 
-#include "i_matching_engine.hpp"
+#include "i_order_types.hpp"
 
 #include <string>
 #include <vector>
 #include <utility>
-
-struct Trade
-{
-    std::string symbol;
-    price_t price;
-    size_t volume;
-    order_id aggressive;
-    order_id passive;
-};
-
-struct PriceLevel
-{
-    price_t price;
-    size_t volume;
-};
 
 struct IOrderBook
 {
