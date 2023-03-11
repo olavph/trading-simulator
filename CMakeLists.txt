@@ -6,13 +6,24 @@ include(CTest)
 enable_testing()
 
 add_library(trading-simulator
-    src/main.cpp
+    src/console_agent.cpp
+    src/market_agent.cpp
     src/matching_engine.cpp
     src/order_book.cpp
+    src/runner.cpp
 )
+
+add_executable(trading-simulator-exec
+    src/main.cpp
+)
+target_link_libraries(trading-simulator-exec PRIVATE
+    trading-simulator
+)
+
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
 include(CPack)
 
 add_subdirectory(tests)
+add_subdirectory(third_party/trompeloeil)

@@ -1,14 +1,14 @@
-#include "main.hpp"
-
-#include "input_parser.hpp"
+#include "console_agent.hpp"
 #include "matching_engine.hpp"
 
-std::vector<std::string> run(std::vector<std::string> const& input)
+#include <iostream>
+#include <memory>
+
+int main(int argc, char const *argv[])
 {
-    MatchingEngine engine;
-    for (auto line : input)
-    {
-        parseInput(engine, line);
-    }
-    return engine.getTradesAndPriceLevels();
+    auto engine = std::make_shared<MatchingEngine>();
+    ConsoleAgent agent(engine, std::cin);
+    agent.run();
+    agent.wait();
+    return 0;
 }

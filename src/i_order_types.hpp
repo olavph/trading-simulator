@@ -18,18 +18,24 @@ struct Order
     order_id id;
     price_t price;
     size_t volume;
+
+    auto operator<=>(const Order&) const = default;
 };
 
 struct BookInfo
 {
     std::string symbol;
     Side side;
+
+    auto operator<=>(const BookInfo&) const = default;
 };
 
 struct NewOrder
 {
     BookInfo book_info;
     Order order_info;
+
+    auto operator<=>(const NewOrder&) const = default;
 };
 
 struct Trade
