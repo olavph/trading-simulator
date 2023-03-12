@@ -7,7 +7,10 @@ enable_testing()
 
 add_library(trading-simulator
     src/console_agent.cpp
+    src/console_observer.cpp
     src/market_agent.cpp
+    src/market_notifier.cpp
+    src/market_observer.cpp
     src/matching_engine.cpp
     src/order_book.cpp
     src/runner.cpp

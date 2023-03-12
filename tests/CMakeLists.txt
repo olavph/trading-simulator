@@ -11,6 +11,7 @@ FetchContent_MakeAvailable(Catch2)
 
 add_executable(tests
     test_console_agent.cpp
+    test_console_observer.cpp
     test_runner.cpp
 )
 target_link_libraries(tests PRIVATE

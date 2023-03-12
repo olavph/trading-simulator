@@ -35,6 +35,10 @@ Side oppositeSide(Side s)
 
 // MatchingEngine
 
+MatchingEngine::MatchingEngine(std::shared_ptr<IMarketObserver> notifier)
+    : market_notifier(notifier)
+{}
+
 void MatchingEngine::insert(const NewOrder& new_order)
 {
     if (id_to_book_map.contains(new_order.order_info.id))
@@ -55,6 +59,12 @@ void MatchingEngine::insert(const NewOrder& new_order)
             new_order.order_info.id, std::make_pair(new_order.book_info, new_order.order_info.price)));
     }
     completed_trades.insert(completed_trades.end(), trades.begin(), trades.end());
+
+    market_notifier->orderAccepted(new_order);
+    for (const Trade &trade : trades)
+    {
+        market_notifier->tradeExecuted(trade);
+    }
 }
 
 void MatchingEngine::amend(const Order& order)
