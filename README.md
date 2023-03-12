@@ -4,6 +4,8 @@ This project is a simulator for a trading system, consisting of an exchange's ma
 
 Written in C++20 and Python.
 
+Sample output:
+
 ![Trading Simulator](media/trading_simulator.png)
 
 # Dependencies

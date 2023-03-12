@@ -20,4 +20,6 @@ target_link_libraries(tests PRIVATE
 
     trading-simulator
 )
-target_include_directories(tests PRIVATE ../src)
+target_include_directories(tests PRIVATE
+    ../src
+)

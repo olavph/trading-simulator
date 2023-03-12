@@ -1,8 +1,8 @@
 #include "runner.hpp"
 
 #include "input_parser.hpp"
-#include "market_notifier.hpp"
-#include "matching_engine.hpp"
+#include "observers/market_notifier.hpp"
+#include "engine/matching_engine.hpp"
 
 std::vector<std::string> run(std::vector<std::string> const &input)
 {

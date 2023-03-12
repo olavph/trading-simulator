@@ -1,4 +1,4 @@
-#include "console_observer.hpp"
+#include "observers/console_observer.hpp"
 
 #include <catch2/catch_test_macros.hpp>
 

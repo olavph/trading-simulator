@@ -1,9 +1,9 @@
-#include "console_agent.hpp"
-#include "console_observer.hpp"
-#include "csv_writer.hpp"
-#include "market_notifier.hpp"
-#include "matching_engine.hpp"
-#include "random_bot.hpp"
+#include "agents/console_agent.hpp"
+#include "agents/random_bot.hpp"
+#include "engine/matching_engine.hpp"
+#include "observers/console_observer.hpp"
+#include "observers/csv_writer.hpp"
+#include "observers/market_notifier.hpp"
 
 #include <fstream>
 #include <iostream>

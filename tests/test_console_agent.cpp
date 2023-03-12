@@ -1,4 +1,4 @@
-#include "console_agent.hpp"
+#include "agents/console_agent.hpp"
 
 #include "mock_matching_engine.hpp"
 
