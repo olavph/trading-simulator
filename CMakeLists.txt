@@ -13,6 +13,7 @@ add_library(trading-simulator
     src/market_observer.cpp
     src/matching_engine.cpp
     src/order_book.cpp
+    src/random_bot.cpp
     src/runner.cpp
 )
 
