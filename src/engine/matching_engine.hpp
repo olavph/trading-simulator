@@ -35,7 +35,7 @@ private:
     // Notifier of market data to other observers
     std::shared_ptr<IMarketObserver> market_notifier;
     // Map symbols to order books
-    std::map<std::string, CentralLimitOrderBook> order_books;
+    std::map<Symbol, CentralLimitOrderBook> order_books;
     // Map order id to the book containing it, along with the price for fast search
     std::map<order_id, std::pair<BookInfo, price_t>> id_to_book_map;
     // Track completed trades

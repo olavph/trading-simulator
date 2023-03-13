@@ -8,7 +8,7 @@ template <class OrderCompare>
 class OrderBook : public IOrderBook
 {
 public:
-    std::pair<Order, std::vector<Trade>> match(const Order&, const std::string& symbol) override;
+    std::pair<Order, std::vector<Trade>> match(const Order&, const Symbol&) override;
     void insert(Order) override;
     bool amend(Order, price_t price_hint) override;
     void pull(order_id, price_t price_hint) override;

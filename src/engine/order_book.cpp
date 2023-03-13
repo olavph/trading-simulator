@@ -4,7 +4,7 @@
 
 template <class OrderCompare>
 std::pair<Order, std::vector<Trade>> OrderBook<OrderCompare>::match(
-    const Order& order, const std::string& symbol)
+    const Order& order, const Symbol& symbol)
 {
     Order remainder{ order };
     std::vector<Trade> trades;

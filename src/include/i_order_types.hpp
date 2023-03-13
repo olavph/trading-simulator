@@ -6,6 +6,7 @@
 
 using order_id = size_t;
 using price_t = double;
+using Symbol = std::string;
 
 enum class Side : bool
 {
@@ -24,7 +25,7 @@ struct Order
 
 struct BookInfo
 {
-    std::string symbol;
+    Symbol symbol;
     Side side;
 
     auto operator<=>(const BookInfo&) const = default;
@@ -40,7 +41,7 @@ struct NewOrder
 
 struct Trade
 {
-    std::string symbol;
+    Symbol symbol;
     price_t price;
     size_t volume;
     order_id aggressive;
@@ -61,5 +62,5 @@ struct PriceLevelsForSymbol
 
 struct PriceLevels
 {
-    std::map<std::string, PriceLevelsForSymbol> symbols;
+    std::map<Symbol, PriceLevelsForSymbol> symbols;
 };
