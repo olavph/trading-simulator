@@ -1,5 +1,6 @@
 #include "console_agent.hpp"
 
+#include <stdexcept>
 #include <thread>
 
 // Public

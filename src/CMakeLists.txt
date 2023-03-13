@@ -8,7 +8,6 @@ add_library(trading-simulator
     observers/csv_writer.cpp
     observers/market_notifier.cpp
     observers/market_observer.cpp
-    runner.cpp
 )
 target_include_directories(trading-simulator PUBLIC include)
 
