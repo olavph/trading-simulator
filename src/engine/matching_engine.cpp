@@ -33,7 +33,7 @@ Side oppositeSide(Side s)
     return static_cast<Side>(!static_cast<bool>(s));
 }
 
-// MatchingEngine
+// Public
 
 MatchingEngine::MatchingEngine(std::shared_ptr<IMarketObserver> notifier)
     : market_notifier(notifier)
@@ -41,55 +41,34 @@ MatchingEngine::MatchingEngine(std::shared_ptr<IMarketObserver> notifier)
 
 void MatchingEngine::insert(const NewOrder& new_order)
 {
-    if (id_to_book_map.contains(new_order.order_info.id))
-        // Do not duplicate orders
-        return;
     if (new_order.order_info.price == 0)
         // Invalid price
         return;
+    if (new_order.order_info.volume == 0)
+        // Invalid volume
+        return;
 
-    auto& doubleSidedBook = order_books[new_order.book_info.symbol];
-    auto& oppositeBook = doubleSidedBook.getOneSidedBook(oppositeSide(new_order.book_info.side));
-    auto [matchRemainder, trades] = oppositeBook.match(new_order.order_info, new_order.book_info.symbol);
-    if (matchRemainder.volume > 0)
-    {
-        auto& book = doubleSidedBook.getOneSidedBook(new_order.book_info.side);
-        book.insert(std::move(matchRemainder));
-        id_to_book_map.emplace(std::make_pair(
-            new_order.order_info.id, std::make_pair(new_order.book_info, new_order.order_info.price)));
-    }
-    completed_trades.insert(completed_trades.end(), trades.begin(), trades.end());
-
-    market_notifier->orderAccepted(new_order);
-    for (const Trade &trade : trades)
-    {
-        market_notifier->tradeExecuted(trade);
-    }
+    std::scoped_lock lock(mtx);
+    locked_insert(new_order);
 }
 
 void MatchingEngine::amend(const Order& order)
 {
-    if (id_to_book_map.contains(order.id))
-    {
-        auto [book_info, previous_price] = id_to_book_map.at(order.id);
-        auto& book = order_books[book_info.symbol].getOneSidedBook(book_info.side);
-        if (book.amend(order, previous_price))
-        {
-            id_to_book_map.erase(order.id);
-            insert({book_info, order});
-        }
-    }
+    if (order.price == 0)
+        // Invalid price
+        return;
+    if (order.volume == 0)
+        // Invalid price
+        return;
+
+    std::scoped_lock lock(mtx);
+    locked_amend(order);
 }
 
 void MatchingEngine::pull(order_id id)
 {
-    if (id_to_book_map.contains(id))
-    {
-        auto [book_info, price] = id_to_book_map.at(id);
-        auto& book = order_books[book_info.symbol].getOneSidedBook(book_info.side);
-        book.pull(id, price);
-        id_to_book_map.erase(id);
-    }
+    std::scoped_lock lock(mtx);
+    locked_pull(id);
 }
 
 std::vector<Trade> MatchingEngine::getTrades() const
@@ -160,4 +139,56 @@ std::vector<std::string> MatchingEngine::getTradesAndPriceLevels() const
         }
     }
     return output;
+}
+
+// Private
+
+void MatchingEngine::locked_insert(const NewOrder& new_order)
+{
+    if (id_to_book_map.contains(new_order.order_info.id))
+        // Do not duplicate orders
+        return;
+
+    auto& doubleSidedBook = order_books[new_order.book_info.symbol];
+    auto& oppositeBook = doubleSidedBook.getOneSidedBook(oppositeSide(new_order.book_info.side));
+    auto [matchRemainder, trades] = oppositeBook.match(new_order.order_info, new_order.book_info.symbol);
+    if (matchRemainder.volume > 0)
+    {
+        auto& book = doubleSidedBook.getOneSidedBook(new_order.book_info.side);
+        book.insert(std::move(matchRemainder));
+        id_to_book_map.emplace(std::make_pair(
+            new_order.order_info.id, std::make_pair(new_order.book_info, new_order.order_info.price)));
+    }
+    completed_trades.insert(completed_trades.end(), trades.begin(), trades.end());
+
+    market_notifier->orderAccepted(new_order);
+    for (const Trade &trade : trades)
+    {
+        market_notifier->tradeExecuted(trade);
+    }
+}
+
+void MatchingEngine::locked_amend(const Order& order)
+{
+    if (id_to_book_map.contains(order.id))
+    {
+        auto [book_info, previous_price] = id_to_book_map.at(order.id);
+        auto& book = order_books[book_info.symbol].getOneSidedBook(book_info.side);
+        if (book.amend(order, previous_price))
+        {
+            id_to_book_map.erase(order.id);
+            locked_insert({book_info, order});
+        }
+    }
+}
+
+void MatchingEngine::locked_pull(order_id id)
+{
+    if (id_to_book_map.contains(id))
+    {
+        auto [book_info, price] = id_to_book_map.at(id);
+        auto& book = order_books[book_info.symbol].getOneSidedBook(book_info.side);
+        book.pull(id, price);
+        id_to_book_map.erase(id);
+    }
 }

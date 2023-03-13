@@ -6,6 +6,7 @@
 
 #include <map>
 #include <memory>
+#include <mutex>
 #include <set>
 #include <utility>
 
@@ -24,6 +25,13 @@ public:
     std::vector<std::string> getTradesAndPriceLevels() const override;
 
 private:
+    // Methods assuming a lock has already been acquired
+    void locked_insert(const NewOrder &);
+    void locked_amend(const Order &);
+    void locked_pull(order_id);
+
+    // Serialize operations
+    std::mutex mtx;
     // Notifier of market data to other observers
     std::shared_ptr<IMarketObserver> market_notifier;
     // Map symbols to order books

@@ -5,8 +5,9 @@
 
 using namespace std::chrono_literals;
 
-constexpr std::array ALLOWED_SYMBOLS{"AAPL", "GOOG", "META", "MSFT"};
-constexpr auto ORDER_INTERVAL = 100ms;
+constexpr order_id orders_per_bot = 1000000;
+constexpr std::array allowed_symbols{"AAPL", "GOOG", "META", "MSFT"};
+constexpr auto order_interval = 100ms;
 constexpr price_t min_price = 1.0;
 constexpr price_t max_price = 100.0;
 constexpr price_t start_price = 50.0;
@@ -16,8 +17,9 @@ constexpr size_t max_volume = 10;
 
 // Public
 
-RandomBot::RandomBot(std::shared_ptr<IMatchingEngine> engine)
-    : MarketAgent(engine)
+RandomBot::RandomBot(std::shared_ptr<IMatchingEngine> engine, order_id bot_id)
+    : MarketAgent(engine),
+      bot_id(bot_id)
 {
 }
 
@@ -30,12 +32,12 @@ void RandomBot::run()
                           {
         std::random_device rd;  // Will be used to obtain a seed for the random number engine
         std::mt19937 gen(rd()); // Standard mersenne_twister_engine seeded with rd()
-        std::uniform_int_distribution<size_t> symbol_distrib(0, ALLOWED_SYMBOLS.size() - 1);
+        std::uniform_int_distribution<size_t> symbol_distrib(0, allowed_symbols.size() - 1);
         std::uniform_int_distribution<int> side_distrib(0, 1);
         std::uniform_int_distribution<size_t> volume_distrib(min_volume, max_volume);
 
-        order_id id = 1;
-        std::array<price_t, ALLOWED_SYMBOLS.size()> last_prices;
+        order_id id = bot_id * orders_per_bot;
+        std::array<price_t, allowed_symbols.size()> last_prices;
         last_prices.fill(start_price);
 
         while (!stop_token.stop_requested())
@@ -45,7 +47,7 @@ void RandomBot::run()
                 std::max(min_price, last_prices[symbol_index] - price_step_delta),
                 std::min(max_price, last_prices[symbol_index] + price_step_delta));
 
-            auto symbol = ALLOWED_SYMBOLS[symbol_index];
+            auto symbol = allowed_symbols[symbol_index];
             auto side = static_cast<Side>(side_distrib(gen));
             auto price = price_distrib(gen);
             auto volume = volume_distrib(gen);
@@ -53,7 +55,7 @@ void RandomBot::run()
 
             insert(order);
 
-            std::this_thread::sleep_for(ORDER_INTERVAL);
+            std::this_thread::sleep_for(order_interval);
             ++id;
             last_prices[symbol_index] = price;
         } });
