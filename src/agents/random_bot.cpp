@@ -5,7 +5,6 @@
 
 using namespace std::chrono_literals;
 
-constexpr order_id orders_per_bot = 1000000;
 constexpr std::array allowed_symbols{"AAPL", "GOOG", "META", "MSFT"};
 constexpr auto order_interval = 100ms;
 constexpr price_t min_price = 1.0;
@@ -17,7 +16,7 @@ constexpr size_t max_volume = 10;
 
 // Public
 
-RandomBot::RandomBot(std::shared_ptr<IMatchingEngine> engine, order_id bot_id)
+RandomBot::RandomBot(std::shared_ptr<IMatchingEngine> engine, agent_id bot_id)
     : MarketAgent(engine),
       bot_id(bot_id)
 {
@@ -36,7 +35,7 @@ void RandomBot::run()
         std::uniform_int_distribution<int> side_distrib(0, 1);
         std::uniform_int_distribution<size_t> volume_distrib(min_volume, max_volume);
 
-        order_id id = bot_id * orders_per_bot;
+        order_id id{bot_id, 0};
         std::array<price_t, allowed_symbols.size()> last_prices;
         last_prices.fill(start_price);
 
@@ -56,7 +55,7 @@ void RandomBot::run()
             insert(order);
 
             std::this_thread::sleep_for(order_interval);
-            ++id;
+            ++id.seq;
             last_prices[symbol_index] = price;
         } });
 }

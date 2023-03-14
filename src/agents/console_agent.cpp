@@ -5,9 +5,10 @@
 
 // Public
 
-ConsoleAgent::ConsoleAgent(std::shared_ptr<IMatchingEngine> engine, std::istream & input) :
+ConsoleAgent::ConsoleAgent(std::shared_ptr<IMatchingEngine> engine, std::istream & input, agent_id id) :
     MarketAgent(engine),
-    input(input)
+    input(input),
+    console_id(id)
 {}
 
 void ConsoleAgent::run()
@@ -77,11 +78,10 @@ void ConsoleAgent::parseInput(std::string input)
             throw std::runtime_error("Invalid input format");
 
         NewOrder order{
-            tokens[2],
-            side,
-            std::stoul(tokens[1]),
-            std::stod(tokens[4]),
-            std::stoul(tokens[5])
+            {tokens[2], side},
+            {{console_id, std::stoul(tokens[1])},
+             std::stod(tokens[4]),
+             std::stoul(tokens[5])}
             };
 
         insert(order);
@@ -93,7 +93,7 @@ void ConsoleAgent::parseInput(std::string input)
             throw std::runtime_error("Invalid number of arguments for AMEND");
 
         Order order{
-            std::stoul(tokens[1]),
+            {console_id, std::stoul(tokens[1])},
             std::stod(tokens[2]),
             std::stoul(tokens[3])
             };
@@ -106,7 +106,7 @@ void ConsoleAgent::parseInput(std::string input)
         if (tokens.size() != 2)
             throw std::runtime_error("Invalid number of arguments for PULL");
 
-        pull(std::stoul(tokens[1]));
+        pull({console_id, std::stoul(tokens[1])});
     }
     else
     {

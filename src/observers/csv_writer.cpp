@@ -1,5 +1,7 @@
 #include "csv_writer.hpp"
 
+#include "i_order_types.hpp"
+
 #include <chrono>
 #include <sstream>
 
@@ -32,7 +34,7 @@ CSV_Writer::CSV_Writer(std::shared_ptr<MarketNotifier> notifier, std::ostream &o
     MarketObserver(notifier),
     output(output)
 {
-    output << "Time,Symbol,Price,Volume,AgressiveId,PassiveId" << std::endl;
+    output << "Time,Symbol,Price,Volume,AgressiveAgentId,AgressiveSeqNum,PassiveAgentId,PassiveSeqNum" << std::endl;
 }
 
 void CSV_Writer::orderAccepted(const NewOrder & order)

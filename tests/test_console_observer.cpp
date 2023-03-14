@@ -8,9 +8,9 @@ TEST_CASE("ConsoleObserver order accepted")
     std::stringstream sstream;
     ConsoleObserver observer{notifier, sstream};
 
-    observer.orderAccepted({{"AAPL", Side::Buy}, {1, 2, 5}});
+    observer.orderAccepted({{"AAPL", Side::Buy}, {{0, 1}, 2, 5}});
 
-    REQUIRE(sstream.str() == "NEW ORDER: AAPL,BUY,1,2,5\n");
+    REQUIRE(sstream.str() == "NEW ORDER: AAPL,BUY,0,1,2,5\n");
 }
 
 TEST_CASE("ConsoleObserver insert multiple orders accepted")
@@ -19,11 +19,11 @@ TEST_CASE("ConsoleObserver insert multiple orders accepted")
     std::stringstream sstream;
     ConsoleObserver observer{notifier, sstream};
 
-    observer.orderAccepted({{"AAPL", Side::Buy}, {1, 2, 5}});
-    observer.orderAccepted({{"AAPL", Side::Buy}, {2, 2, 5}});
+    observer.orderAccepted({{"AAPL", Side::Buy}, {{0, 1}, 2, 5}});
+    observer.orderAccepted({{"AAPL", Side::Buy}, {{0, 2}, 2, 5}});
 
-    REQUIRE(sstream.str() == "NEW ORDER: AAPL,BUY,1,2,5\n"
-                             "NEW ORDER: AAPL,BUY,2,2,5\n");
+    REQUIRE(sstream.str() == "NEW ORDER: AAPL,BUY,0,1,2,5\n"
+                             "NEW ORDER: AAPL,BUY,0,2,2,5\n");
 }
 
 TEST_CASE("ConsoleObserver trade executed")
@@ -32,7 +32,7 @@ TEST_CASE("ConsoleObserver trade executed")
     std::stringstream sstream;
     ConsoleObserver observer{notifier, sstream};
 
-    observer.tradeExecuted({"AAPL", 5, 2, 1, 2});
+    observer.tradeExecuted({"AAPL", 5, 2, {1, 0}, {2, 0}});
 
-    REQUIRE(sstream.str() == "TRADE EXECUTED: AAPL,5,2,1,2\n");
+    REQUIRE(sstream.str() == "TRADE EXECUTED: AAPL,5,2,1,0,2,0\n");
 }

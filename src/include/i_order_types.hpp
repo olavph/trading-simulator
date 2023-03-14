@@ -4,7 +4,8 @@
 #include <string>
 #include <vector>
 
-using order_id = size_t;
+using agent_id = size_t;
+using seq_num = size_t;
 using price_t = double;
 using Symbol = std::string;
 
@@ -13,6 +14,15 @@ enum class Side : bool
     Buy,
     Sell
 };
+
+struct order_id
+{
+    agent_id agent;
+    seq_num seq;
+
+    auto operator<=>(const order_id&) const = default;
+};
+std::ostream &operator<<(std::ostream &os, const order_id &id);
 
 struct Order
 {

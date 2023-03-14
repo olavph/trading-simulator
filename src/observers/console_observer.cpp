@@ -1,5 +1,7 @@
 #include "console_observer.hpp"
 
+#include "i_order_types.hpp"
+
 #include <sstream>
 
 namespace

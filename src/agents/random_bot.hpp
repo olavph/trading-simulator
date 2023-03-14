@@ -8,7 +8,7 @@
 class RandomBot : public MarketAgent
 {
 public:
-    RandomBot(std::shared_ptr<IMatchingEngine> engine, order_id bot_id);
+    RandomBot(std::shared_ptr<IMatchingEngine> engine, agent_id bot_id);
 
     void run();
     void wait();
@@ -16,5 +16,5 @@ public:
 
 private:
     std::jthread thread;
-    order_id bot_id;
+    agent_id bot_id;
 };

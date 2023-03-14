@@ -4,6 +4,7 @@ add_library(trading-simulator
     agents/random_bot.cpp
     engine/matching_engine.cpp
     engine/order_book.cpp
+    engine/order_types.cpp
     observers/console_observer.cpp
     observers/csv_writer.cpp
     observers/market_notifier.cpp

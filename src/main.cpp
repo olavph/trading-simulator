@@ -22,7 +22,7 @@ int main(int argc, char const *argv[])
     std::ofstream csv_file_stream{csv_file_name, std::ios_base::trunc | std::ios_base::out};
     CSV_Writer csv_writer{notifier, csv_file_stream};
 
-    ConsoleAgent agent{engine, std::cin};
+    ConsoleAgent agent{engine, std::cin, 0};
     std::vector<RandomBot> bots;
     bots.reserve(NUM_BOTS);
     for (int i = 1; i <= NUM_BOTS; ++i)

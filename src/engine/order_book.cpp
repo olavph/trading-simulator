@@ -116,7 +116,7 @@ template <class OrderCompare>
 std::multiset<Order, OrderCompare>::iterator OrderBook<OrderCompare>::find(
     order_id id, price_t price_hint) const
 {
-    auto order_it = orders.find({0, price_hint, 0});
+    auto order_it = orders.find({{0, 0}, price_hint, 0});
     while (order_it != orders.end() && (*order_it).price == price_hint)
     {
         if ((*order_it).id == id)

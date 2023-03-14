@@ -1,5 +1,7 @@
 #include "matching_engine.hpp"
 
+#include "i_order_types.hpp"
+
 #include <functional>
 #include <sstream>
 
