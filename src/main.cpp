@@ -1,5 +1,5 @@
 #include "agents/console_agent.hpp"
-#include "agents/random_bot.hpp"
+#include "bots/random_bot.hpp"
 #include "engine/matching_engine.hpp"
 #include "observers/console_observer.hpp"
 #include "observers/csv_writer.hpp"
@@ -26,7 +26,7 @@ int main(int argc, char const *argv[])
     std::vector<RandomBot> bots;
     bots.reserve(NUM_BOTS);
     for (int i = 1; i <= NUM_BOTS; ++i)
-        bots.emplace_back(engine, i);
+        bots.emplace_back(notifier, engine, i);
 
     agent.run();
     for (auto &bot : bots)

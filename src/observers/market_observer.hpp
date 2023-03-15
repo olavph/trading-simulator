@@ -9,11 +9,11 @@ class MarketObserver : public IMarketObserver
 {
 public:
     MarketObserver(std::shared_ptr<MarketNotifier>);
-    virtual ~MarketObserver();
     MarketObserver(const MarketObserver &) = delete;
-    MarketObserver(MarketObserver &&) = delete;
     MarketObserver &operator=(const MarketObserver &) = delete;
-    MarketObserver &operator=(MarketObserver &&) = delete;
+    MarketObserver(MarketObserver &&);
+    MarketObserver &operator=(MarketObserver &&) = default;
+    virtual ~MarketObserver();
 
 private:
     std::shared_ptr<MarketNotifier> market_notifier;
