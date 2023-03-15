@@ -14,8 +14,7 @@ constexpr price_t market_price_delta = 5.0;
 constexpr size_t min_volume = 1;
 constexpr size_t max_volume = 10;
 
-// Public
-
+// RandomBot sends orders to the exchange without concerns on profitability
 RandomBot::RandomBot(std::shared_ptr<MarketNotifier> notifier, std::shared_ptr<IMatchingEngine> engine, agent_id bot_id)
     : MarketObserver(notifier),
       MarketAgent(engine),
@@ -31,11 +30,15 @@ void RandomBot::orderAccepted(const NewOrder &order)
 {
 }
 
+// Update market prices when a trade is observed
 void RandomBot::tradeExecuted(const Trade &trade)
 {
     market_prices[trade.symbol].store(trade.price, std::memory_order::relaxed);
 }
 
+// Start a thread that will periodically send orders to the matching engine.
+// Order symbol, type, volume and price are random. Price has a maximum delta
+// to last observed market price.
 void RandomBot::run()
 {
     if (thread.joinable())
@@ -43,8 +46,8 @@ void RandomBot::run()
 
     thread = std::jthread([this](std::stop_token stop_token)
                           {
-        std::random_device rd;  // Will be used to obtain a seed for the random number engine
-        std::mt19937 gen(rd()); // Standard mersenne_twister_engine seeded with rd()
+        std::random_device rd;
+        std::mt19937 gen(rd());
         std::uniform_int_distribution<size_t> symbol_distrib(0, allowed_symbols.size() - 1);
         std::uniform_int_distribution<int> side_distrib(0, 1);
         std::uniform_int_distribution<size_t> volume_distrib(min_volume, max_volume);
@@ -74,11 +77,13 @@ void RandomBot::run()
         } });
 }
 
+// Wait for the bot's thread to stop
 void RandomBot::wait()
 {
     thread.join();
 }
 
+// Request the bot's thread to stop
 void RandomBot::stop()
 {
     thread.request_stop();
